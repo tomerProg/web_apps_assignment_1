@@ -40,3 +40,13 @@ export const updatePost = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
     }
 }
+export const deletePost = async (req, res) => {
+    const { postId } = req.params;
+
+    try {
+        await postModel.deleteOne({ _id: postId });
+        res.sendStatus(StatusCodes.OK);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+};
