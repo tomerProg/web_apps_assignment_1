@@ -1,0 +1,10 @@
+###
+
+POST http://localhost:8080/posts
+content-Type: application/json
+
+{
+    "title": "Best course ever",
+    "content": "This course is amazing",
+    "owner": "Tomer Shomron & Omer Hasid"
+}
