@@ -1,6 +1,8 @@
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import express from 'express'
+import commentsRouter from './routes/comments_route.js'
+
 
 dotenv.config();
 const { PORT: serverPort, DB_CONNECT: dbServer } = process.env;
@@ -13,4 +15,4 @@ app.listen(serverPort, () => {
     console.log(`server listening on port ${serverPort}`);
 });
 
-app.use('/comments', commentsRouter)
+app.use('/comments', commentsRouter);
