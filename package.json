@@ -1,0 +1,21 @@
+{
+  "name": "web_apps_assignment_1",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "first assignment for \"advanced web applications\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomerProg/web_apps_assignment_1.git"
+  },
+  "author": "Tomer Shomron & Omer Hasid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tomerProg/web_apps_assignment_1/issues"
+  },
+  "homepage": "https://github.com/tomerProg/web_apps_assignment_1#readme"
+}
