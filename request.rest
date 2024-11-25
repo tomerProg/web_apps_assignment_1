@@ -1,6 +1,18 @@
 ###
 
-POST http://localhost:8080/posts
+POST http://localhost:8080/comments
+content-Type: application/json
+
+{
+    "user": "Hasid",
+    "postId": "111111111111",
+    "content": "Beautiful post"
+}
+
+
+###
+
+POST http://localhost:8080/comments
 content-Type: application/json
 
 {
