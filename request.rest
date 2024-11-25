@@ -1,5 +1,49 @@
 ###
 
+GET http://localhost:8080/comments
+
+###
+
+POST http://localhost:8080/comments
+content-Type: application/json
+
+{
+    "user": "Hasid",
+    "postId": "111111111111",
+    "content": "Beautiful post"
+}
+
+###
+
+PUT  http://localhost:8080/posts/6744d3120f3232bdcdfa135e
+content-Type: application/json
+
+{
+    "title": "BFF",
+    "content": "Amazing",
+    "owner": "Tomer Hasid"
+}
+
+###
+
+GET http://localhost:8080/posts?sender=tomer
+
+###
+
+PUT  http://localhost:8080/comments/6734b0c818a1cf8344804554
+content-Type: application/json
+
+{
+    "postId": "111111111111111111111111",
+    "content": "Updated comment"
+}
+
+###
+
+DELETE http://localhost:8080/comments/6734b0c818a1cf8344804554
+
+###
+
 POST http://localhost:8080/posts
 content-Type: application/json
 
@@ -11,4 +55,12 @@ content-Type: application/json
 
 ###
 
-GET http://localhost:8080/comments
+GET http://localhost:8080/posts?sender=tomer
+
+###
+
+GET http://localhost:8080/posts?sender=tomer
+
+###
+
+GET http://localhost:8080/posts
