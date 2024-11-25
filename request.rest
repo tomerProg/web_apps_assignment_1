@@ -8,3 +8,7 @@ content-Type: application/json
     "content": "This course is amazing",
     "owner": "Tomer Shomron & Omer Hasid"
 }
+
+###
+
+GET http://localhost:8080/comments
