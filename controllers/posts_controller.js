@@ -21,3 +21,22 @@ export const getPosts = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
     }
 };
+
+export const updatePost = async (req, res) => {
+    const {
+        params: { postId },
+        body: postUpdate,
+    } = req;
+
+    try {
+        const { modifiedCount } = await postModel.updateOne({ _id: postId }, postUpdate);
+        
+        if (modifiedCount === 0) {
+            res.status(StatusCodes.NOT_FOUND).send('post is not exist');
+        } else {
+            res.sendStatus(StatusCodes.OK);
+        }
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+}

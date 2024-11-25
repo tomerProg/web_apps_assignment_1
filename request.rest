@@ -11,6 +11,21 @@ content-Type: application/json
 
 ###
 
+PUT  http://localhost:8080/posts/6744d3120f3232bdcdfa135e
+content-Type: application/json
+
+{
+    "title": "BFF",
+    "content": "Amazing",
+    "owner": "Tomer Hasid"
+}
+
+###
+
+GET http://localhost:8080/posts?sender=tomer
+
+###
+
 PUT  http://localhost:8080/comments/6734b0c818a1cf8344804554
 content-Type: application/json
 
