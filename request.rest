@@ -1,5 +1,16 @@
 ###
 
+POST http://localhost:8080/posts
+content-Type: application/json
+
+{
+    "title": "Best course ever",
+    "content": "This course is amazing",
+    "owner": "Tomer Shomron & Omer Hasid"
+}
+
+###
+
 PUT  http://localhost:8080/comments/6734b0c818a1cf8344804554
 content-Type: application/json
 
