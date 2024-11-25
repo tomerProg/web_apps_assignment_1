@@ -22,6 +22,9 @@ content-Type: application/json
 }
 
 ###
+GET http://localhost:8080/posts?sender=tomer
+
+###
 
 PUT  http://localhost:8080/posts/6744d3120f3232bdcdfa135e
 content-Type: application/json
