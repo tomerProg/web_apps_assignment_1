@@ -12,3 +12,5 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.listen(serverPort, () => {
     console.log(`server listening on port ${serverPort}`);
 });
+
+app.use('/comments', commentsRouter)
