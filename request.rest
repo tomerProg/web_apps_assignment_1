@@ -36,6 +36,16 @@ GET http://localhost:8080/posts?sender=tomer
 
 ###
 
+PUT  http://localhost:8080/comments/6734b0c818a1cf8344804554
+content-Type: application/json
+
+{
+    "postId": "111111111111111111111111",
+    "content": "Updated comment"
+}
+
+###
+
 GET http://localhost:8080/posts?sender=tomer
 
 

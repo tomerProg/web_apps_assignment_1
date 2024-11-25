@@ -11,3 +11,22 @@ export const createComment = async (req, res) => {
         res.status(StatusCodes.BAD_REQUEST).send(error.message);
     }
 };
+
+export const updateComment = async (req, res) => {
+    const {
+        params: { commentId },
+        body: commentUpdate,
+    } = req;
+
+    try {
+        const { modifiedCount } = await commentModel.updateOne({ _id: commentId }, commentUpdate);
+
+        if (modifiedCount === 0) {
+            res.status(StatusCodes.NOT_FOUND).send('comment is not exist');
+        } else {
+            res.sendStatus(StatusCodes.OK);
+        }
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+};
