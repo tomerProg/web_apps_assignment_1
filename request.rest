@@ -67,5 +67,9 @@ GET http://localhost:8080/posts?sender=tomer
 GET http://localhost:8080/posts
 ###
 
+GET http://localhost:8080/posts/67437487809a2059cef4d126
+
+###
+
 DELETE http://localhost:8080/posts/6744d3bea79f6c0d99ce79d3
 
