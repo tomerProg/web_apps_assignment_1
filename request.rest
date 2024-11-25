@@ -8,3 +8,7 @@ content-Type: application/json
     "content": "This course is amazing",
     "owner": "Tomer Shomron & Omer Hasid"
 }
+
+###
+
+DELETE http://localhost:8080/comments/6734b0c818a1cf8344804554
