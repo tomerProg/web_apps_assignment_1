@@ -2,9 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import commentModel from '../models/comments_model.js';
 
 
-export const getAllComments = async (_req, res) => {
+export const getComments = async (req, res) => {
+    const { postId } = req.query;
     try {
-        const comments = await commentModel.find();
+        const comments = await commentModel.find(postId ? {postId} : {});
         res.send(comments);
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
