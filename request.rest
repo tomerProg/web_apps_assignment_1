@@ -1,5 +1,9 @@
 ###
 
+GET http://localhost:8080/comments
+
+###
+
 POST http://localhost:8080/comments
 content-Type: application/json
 
@@ -56,7 +60,6 @@ GET http://localhost:8080/posts?sender=tomer
 ###
 
 GET http://localhost:8080/posts?sender=tomer
-
 
 ###
 
