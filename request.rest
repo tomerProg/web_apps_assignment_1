@@ -12,7 +12,7 @@ content-Type: application/json
 
 ###
 
-POST http://localhost:8080/comments
+POST http://localhost:8080/posts
 content-Type: application/json
 
 {
@@ -20,6 +20,9 @@ content-Type: application/json
     "content": "This course is amazing",
     "owner": "Tomer Shomron & Omer Hasid"
 }
+
+###
+GET http://localhost:8080/posts?sender=tomer
 
 ###
 
@@ -34,3 +37,8 @@ content-Type: application/json
 ###
 
 GET http://localhost:8080/posts?sender=tomer
+
+
+###
+
+GET http://localhost:8080/posts
