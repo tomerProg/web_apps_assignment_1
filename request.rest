@@ -1,5 +1,30 @@
 ###
 
+POST http://localhost:8080/comments
+content-Type: application/json
+
+{
+    "user": "Hasid",
+    "postId": "111111111111",
+    "content": "Beautiful post"
+}
+
+###
+
+PUT  http://localhost:8080/comments/6734b0c818a1cf8344804554
+content-Type: application/json
+
+{
+    "postId": "111111111111111111111111",
+    "content": "Updated comment"
+}
+
+###
+
+DELETE http://localhost:8080/comments/6734b0c818a1cf8344804554
+
+###
+
 POST http://localhost:8080/posts
 content-Type: application/json
 
@@ -11,4 +36,13 @@ content-Type: application/json
 
 ###
 
-DELETE http://localhost:8080/comments/6734b0c818a1cf8344804554
+GET http://localhost:8080/posts?sender=tomer
+
+###
+
+GET http://localhost:8080/posts?sender=tomer
+
+
+###
+
+GET http://localhost:8080/posts

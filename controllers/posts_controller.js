@@ -11,3 +11,13 @@ export const createPost = async (req, res) => {
         res.status(StatusCodes.BAD_REQUEST).send(error.message);
     }
 };
+
+export const getPosts = async (req, res) => {
+    const { sender  } = req.query;
+    try {
+        const posts = await postModel.find(sender ? { owner: sender } : {});
+        res.send(posts);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error.message);
+    }
+};
