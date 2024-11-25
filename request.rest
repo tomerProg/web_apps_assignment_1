@@ -22,6 +22,7 @@ content-Type: application/json
 
 ###
 
+
 GET http://localhost:8080/posts?sender=tomer
 
 ###
@@ -61,3 +62,7 @@ GET http://localhost:8080/posts?sender=tomer
 ###
 
 GET http://localhost:8080/posts
+###
+
+DELETE http://localhost:8080/posts/6744d3bea79f6c0d99ce79d3
+
