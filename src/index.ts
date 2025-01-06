@@ -1,26 +1,29 @@
 import dotenv from 'dotenv';
-import { Database } from './database.js';
-import { Server } from './server.js';
+import initApp from './server';
 
 dotenv.config();
-const { PORT: serverPort, DB_CONNECT: dbConnectionString } = process.env;
+const { PORT: port } = process.env;
+
+if (!port) {
+    console.log('missing config PORT');
+    process.exit(1);
+}
 
 const startSystem = async () => {
-    if (!dbConnectionString) {
-        throw new Error('missing config DB_CONNECT');
-    }
-    if (!serverPort) {
-        throw new Error('missing config PORT');
-    }
+    const app = await initApp();
 
-    const database = new Database(dbConnectionString);
-    const server = new Server(serverPort);
+    return new Promise<void>((resolve, reject) => {
+        app.listen(port, () => {
+            console.log(`server listening on port ${port}`);
+            resolve();
+        });
 
-    await database.start();
-    await server.start();
+        app.once('error', reject);
+    });
 };
 
-startSystem().catch((error) => {
-    console.log(error);
-    process.exit(1);
-});
+startSystem()
+    .catch((error) => {
+        console.log(error);
+        process.exit(1);
+    });

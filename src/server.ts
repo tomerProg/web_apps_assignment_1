@@ -1,52 +1,29 @@
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
-import * as http from 'http';
+import { Database } from './database';
 import commentsRouter from './routes/comments_route.js';
 import postsRouter from './routes/posts_route';
-import { Service } from './service';
 
-export class Server extends Service {
-    private readonly app: Express;
-    private readonly server: http.Server;
+const createApp = (): Express => {
+    const app = express();
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-    constructor(private readonly port: number | string) {
-        super();
+    app.use('/posts', postsRouter);
+    app.use('/comments', commentsRouter);
 
-        this.app = express();
-        this.useMiddlwares();
-        this.useRoutes();
-        this.server = http.createServer(this.app);
+    return app;
+};
+
+const initApp = async () => {
+    const { DB_CONNECT: dbConnectionString } = process.env;
+    if (!dbConnectionString) {
+        throw new Error('missing config DB_CONNECT');
     }
+    const database = new Database(dbConnectionString);
+    await database.connect();
 
-    useMiddlwares() {
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
-    }
+    return createApp();
+};
 
-    useRoutes() {
-        this.app.use('/posts', postsRouter);
-        this.app.use('/comments', commentsRouter);
-    }
-
-    start() {
-        return new Promise<void>((resolve, reject) => {
-            this.server
-                .listen(this.port, () => {
-                    console.log(`server listening on port ${this.port}`);
-                    resolve();
-                })
-                .once('error', reject);
-        });
-    }
-
-    stop() {
-        return new Promise<void>((resolve, reject) => {
-            this.server
-                .close(() => {
-                    console.log('server closed');
-                    resolve();
-                })
-                .once('error', reject);
-        });
-    }
-}
+export default initApp;
