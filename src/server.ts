@@ -21,7 +21,7 @@ const startServer = async () => {
     }
     const app = createApp();
 
-    return new Promise((resolve, reject) => {
+    return new Promise<Express>((resolve, reject) => {
         app.listen(port, () => {
             console.log(`server listening on port ${port}`);
             resolve(app);
