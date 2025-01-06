@@ -11,7 +11,7 @@ class BaseController<T> {
             const items = await this.model.find(filter ? { owner: filter } : {});
             res.send(items);
         } catch (error) {
-            res.status(StatusCodes.BAD_REQUEST).send(error);
+            res.status(StatusCodes.BAD_REQUEST);
         }
     }
 
@@ -25,7 +25,7 @@ class BaseController<T> {
                 res.status(StatusCodes.NOT_FOUND).send('not found');
             }
         } catch (error) {
-            res.status(StatusCodes.BAD_REQUEST).send(error);
+            res.status(StatusCodes.BAD_REQUEST);
         }
     }
 
@@ -35,7 +35,7 @@ class BaseController<T> {
             const item = await this.model.create(body);
             res.status(StatusCodes.CREATED).send(item);
         } catch (error) {
-            res.status(StatusCodes.BAD_REQUEST).send(error);
+            res.status(StatusCodes.BAD_REQUEST);
         }
     }
 
@@ -64,7 +64,7 @@ class BaseController<T> {
                 res.sendStatus(StatusCodes.OK);
             }
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
 }
