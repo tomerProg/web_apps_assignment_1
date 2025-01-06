@@ -1,29 +1,17 @@
 import dotenv from 'dotenv';
-import initApp from './server';
+import startDatabase from './database';
+import startServer from './server';
 
 dotenv.config();
-const { PORT: port } = process.env;
-
-if (!port) {
-    console.log('missing config PORT');
-    process.exit(1);
-}
 
 const startSystem = async () => {
-    const app = await initApp();
+    const database = await startDatabase();
+    const app = await startServer();
 
-    return new Promise<void>((resolve, reject) => {
-        app.listen(port, () => {
-            console.log(`server listening on port ${port}`);
-            resolve();
-        });
-
-        app.once('error', reject);
-    });
+    return { app, database };
 };
 
-startSystem()
-    .catch((error) => {
-        console.log(error);
-        process.exit(1);
-    });
+startSystem().catch((error) => {
+    console.log(error);
+    process.exit(1);
+});

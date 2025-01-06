@@ -1,10 +1,9 @@
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
-import { Database } from './database';
 import commentsRouter from './routes/comments_route.js';
 import postsRouter from './routes/posts_route';
 
-const createApp = (): Express => {
+export const createApp = (): Express => {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,15 +14,21 @@ const createApp = (): Express => {
     return app;
 };
 
-const initApp = async () => {
-    const { DB_CONNECT: dbConnectionString } = process.env;
-    if (!dbConnectionString) {
-        throw new Error('missing config DB_CONNECT');
+const startServer = async () => {
+    const { PORT: port } = process.env;
+    if (!port) {
+        throw new Error('missing config PORT');
     }
-    const database = new Database(dbConnectionString);
-    await database.connect();
+    const app = createApp();
 
-    return createApp();
+    return new Promise((resolve, reject) => {
+        app.listen(port, () => {
+            console.log(`server listening on port ${port}`);
+            resolve(app);
+        });
+
+        app.once('error', reject);
+    });
 };
 
-export default initApp;
+export default startServer;
