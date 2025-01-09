@@ -108,5 +108,13 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "lib": ["es2015"]
+  "lib": ["es2015"],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "**/*.test.ts",
+    "**/__tests__/**"
+  ]
 }
