@@ -52,7 +52,7 @@ class BaseController<T> {
     async update(req: Request, res: Response) {
         const {
             params: { id },
-            body: update,
+            body: update
         } = req;
 
         try {
