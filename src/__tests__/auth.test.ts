@@ -37,7 +37,7 @@ describe('authentication tests', () => {
             const registerResponse = await registerUser();
             const registerExistingResponse = await registerUser();
 
-            expect(registerResponse.status).toBe(StatusCodes.ACCEPTED);
+            expect(registerResponse.status).toBe(StatusCodes.CREATED);
             expect(registerExistingResponse.status).toBe(StatusCodes.BAD_REQUEST);
         });
 
