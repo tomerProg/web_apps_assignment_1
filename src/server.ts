@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
+import authRouter from './routes/auth_route';
 import commentsRouter from './routes/comments_route.js';
 import postsRouter from './routes/posts_route';
 
@@ -7,7 +8,8 @@ export const createApp = (): Express => {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
-
+    
+    app.use('/auth', authRouter);
     app.use('/posts', postsRouter);
     app.use('/comments', commentsRouter);
 
