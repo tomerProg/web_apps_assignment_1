@@ -34,7 +34,7 @@ describe('authentication tests', () => {
             expect(response.status).toBe(StatusCodes.CREATED);
         });
 
-        // TODO: remove skip ! ONLY ! after creating unique index for email field 
+        // TODO: remove skip ! ONLY ! after creating unique index for email field
         test.skip('register exisitng user shold return BAD_REQUEST', async () => {
             const registerUser = (user: User) =>
                 request(app).post(routeInAuthRouter('/register')).send(user);
