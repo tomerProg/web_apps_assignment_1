@@ -1,3 +1,4 @@
+import { Express } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
 import {
@@ -7,6 +8,27 @@ import {
 import startDatabase, { Database } from '../database';
 import usersModel, { IUser } from '../models/users_model';
 import { createApp } from '../server';
+
+export const createUserAuthenticationToken = async (
+    app: Express,
+    user: IUser
+) => {
+    const oldTokenExpire = process.env.TOKEN_EXPIRES;
+    process.env.TOKEN_EXPIRES = '3h';
+    const registerResponse = await request(app)
+        .post('/auth/register')
+        .send(user);
+    const loginResponse = await request(app).post('/auth/login').send(user);
+    process.env.TOKEN_EXPIRES = oldTokenExpire;
+    if (
+        registerResponse.status !== StatusCodes.CREATED ||
+        !loginResponse.body.accessToken
+    ) {
+        throw new Error('failed creating auth token');
+    }
+
+    return loginResponse.body.accessToken;
+};
 
 describe('authentication tests', () => {
     let database: Database;
