@@ -9,7 +9,7 @@ export interface IComment {
 const commentSchema = new Schema<IComment>({
     owner: {type: String, required: true},
     postId: { type: String, required: true },
-    content: String,
+    content: {type: String, required: true},
 });
 
 export default model('Comments', commentSchema);

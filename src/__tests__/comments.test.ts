@@ -14,7 +14,7 @@ describe('Comments Router', () => {
         await CommentModel.deleteMany();
     });
     afterAll(async () => {
-        database.disconnect();
+        await database.disconnect();
     });
 
     beforeEach(async () => {
