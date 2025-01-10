@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
 import startDatabase, { Database } from '../database';
-import usersModel, { User } from '../models/users_model';
+import usersModel, { IUser } from '../models/users_model';
 import { createApp } from '../server';
 
 describe('authentication tests', () => {
@@ -12,7 +12,7 @@ describe('authentication tests', () => {
         database = await startDatabase();
     });
     afterAll(async () => {
-        database.disconnect();
+        await database.disconnect();
     });
     afterEach(async () => {
         await usersModel.deleteMany();
@@ -21,7 +21,7 @@ describe('authentication tests', () => {
     const routeInAuthRouter = (route: string) => '/auth' + route;
 
     describe('register', () => {
-        const user: User = {
+        const user: IUser = {
             email: 'tomercpc01@gmail.com',
             password: '123456'
         };
@@ -34,9 +34,8 @@ describe('authentication tests', () => {
             expect(response.status).toBe(StatusCodes.CREATED);
         });
 
-        // TODO: remove skip ! ONLY ! after creating unique index for email field 
-        test.skip('register exisitng user shold return BAD_REQUEST', async () => {
-            const registerUser = (user: User) =>
+        test('register exisitng user shold return BAD_REQUEST', async () => {
+            const registerUser = (user: IUser) =>
                 request(app).post(routeInAuthRouter('/register')).send(user);
             const registerResponse = await registerUser(user);
             const registerExistingResponse = await registerUser({
@@ -51,7 +50,7 @@ describe('authentication tests', () => {
         });
 
         test('missing email shold return BAD_REQUEST', async () => {
-            const user: Partial<User> = {
+            const user: Partial<IUser> = {
                 password: '123456'
             };
             const response = await request(app)
@@ -62,7 +61,7 @@ describe('authentication tests', () => {
         });
 
         test('missing password shold return BAD_REQUEST', async () => {
-            const user: Partial<User> = {
+            const user: Partial<IUser> = {
                 email: 'tomercpc01@gmail.com'
             };
             const response = await request(app)
