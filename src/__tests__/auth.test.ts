@@ -160,7 +160,7 @@ describe('authentication tests', () => {
         });
     });
 
-    describe.only('refresh token', () => {
+    describe('refresh token', () => {
         const createPostRequest = (accessToken: string) =>
             request(app)
                 .post('/posts')
@@ -207,7 +207,7 @@ describe('authentication tests', () => {
             await new Promise((resolve) => setTimeout(resolve, 5000));
 
             const createPostResponse = await createPostRequest(accessToken);
-            expect(createPostResponse.status).not.toBe(StatusCodes.CREATED);
+            expect(createPostResponse.status).toBe(StatusCodes.UNAUTHORIZED);
 
             const refreshResponse = await request(app)
                 .post(routeInAuthRouter('/refresh'))
