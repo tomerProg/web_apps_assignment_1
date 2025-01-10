@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
-import { createUserForDb } from '../controllers/auth_controller';
+import {
+    createUserForDb,
+    generateTokens
+} from '../controllers/auth_controller';
 import startDatabase, { Database } from '../database';
 import usersModel, { IUser } from '../models/users_model';
 import { createApp } from '../server';
@@ -9,34 +12,51 @@ describe('authentication tests', () => {
     let database: Database;
     const app = createApp();
 
-    beforeAll(async () => {
-        database = await startDatabase();
-    });
-    afterAll(async () => {
-        await database.disconnect();
-    });
-    afterEach(async () => {
-        await usersModel.deleteMany();
-    });
-
     const routeInAuthRouter = (route: string) => '/auth' + route;
     const testUser: IUser = {
         email: 'tomercpc01@gmail.com',
         password: '123456'
     };
 
+    const loginUser = async (user: IUser) => {
+        const response = await request(app)
+            .post(routeInAuthRouter('/login'))
+            .send(user);
+        expect(response.status).toBe(StatusCodes.OK);
+
+        return response;
+    };
+
+    beforeAll(async () => {
+        database = await startDatabase();
+    });
+    afterAll(async () => {
+        await database.disconnect();
+    });
+    beforeEach(async () => {
+        const { email, password } = testUser;
+        const user = await createUserForDb(email, password);
+        await usersModel.create(user);
+    });
+    afterEach(async () => {
+        await usersModel.deleteMany();
+    });
+
     describe('register', () => {
+        beforeEach(async () => {
+            await usersModel.deleteMany();
+        });
+
+        const registerUser = (user: IUser) =>
+            request(app).post(routeInAuthRouter('/register')).send(user);
+
         test('register new user shold create user', async () => {
-            const response = await request(app)
-                .post(routeInAuthRouter('/register'))
-                .send(testUser);
+            const response = await registerUser(testUser);
 
             expect(response.status).toBe(StatusCodes.CREATED);
         });
 
         test('register exisitng user shold return BAD_REQUEST', async () => {
-            const registerUser = (user: IUser) =>
-                request(app).post(routeInAuthRouter('/register')).send(user);
             const registerResponse = await registerUser(testUser);
             const registerExistingResponse = await registerUser({
                 ...testUser,
@@ -73,33 +93,18 @@ describe('authentication tests', () => {
     });
 
     describe('login', () => {
-        beforeEach(async () => {
-            const { email, password } = testUser;
-            const user = await createUserForDb(email, password);
-            await usersModel.create(user);
-        });
-
         test('user login should return tokens', async () => {
-            const response = await request(app)
-                .post(routeInAuthRouter('/login'))
-                .send(testUser);
+            const response = await loginUser(testUser);
             const { accessToken, refreshToken } = response.body;
 
-            expect(response.statusCode).toBe(StatusCodes.OK);
             expect(accessToken).toBeDefined();
             expect(refreshToken).toBeDefined();
             expect(response.body._id).toBeDefined();
         });
 
         test('login should return different tokens for each login', async () => {
-            const loginUser = () =>
-                request(app).post(routeInAuthRouter('/login')).send(testUser);
-
-            const firstLogin = await loginUser();
-            expect(firstLogin.status).toBe(StatusCodes.OK);
-
-            const secondLogin = await loginUser();
-            expect(secondLogin.status).toBe(StatusCodes.OK);
+            const firstLogin = await loginUser(testUser);
+            const secondLogin = await loginUser(testUser);
 
             const {
                 accessToken: firstLoginAccesToken,
@@ -134,5 +139,86 @@ describe('authentication tests', () => {
 
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
         });
+    });
+
+    describe('logout', () => {
+        test('logout should remove all user refresh tokens', async () => {
+            const loginResponse = await loginUser(testUser);
+            expect(loginResponse.statusCode).toBe(StatusCodes.OK);
+            const { refreshToken, _id: userId } = loginResponse.body;
+
+            const logoutResponse = await request(app)
+                .post(routeInAuthRouter('/logout'))
+                .send({ refreshToken });
+            expect(logoutResponse.statusCode).toBe(StatusCodes.OK);
+
+            const user = await usersModel.findById(userId);
+            expect(user).toBeDefined();
+            expect(user!.refreshToken?.length).toBe(0);
+        });
+    });
+
+    describe('refresh token', () => {
+        const createPostRequest = (accessToken: string) =>
+            request(app)
+                .post('/posts')
+                .set({ authorization: 'JWT ' + accessToken })
+                .send({
+                    title: 'Test Post',
+                    content: 'Test Content',
+                    owner: 'sdfSd'
+                });
+
+        test('not existing refresh token should return BAD_REQUEST and empty user refresh tokens', async () => {
+            const loginResponse = await loginUser(testUser);
+            const userId = loginResponse.body._id;
+            const tokens = generateTokens(userId)!;
+            expect(tokens).toBeDefined();
+            const { refreshToken } = tokens!;
+
+            const refreshResponse = await request(app)
+                .post(routeInAuthRouter('/refresh'))
+                .send({ refreshToken });
+
+            const user = await usersModel.findById(userId);
+            expect(refreshResponse.status).toBe(StatusCodes.BAD_REQUEST);
+            expect(user?.refreshToken?.length).toBe(0);
+        });
+
+        test('refresh should insert new refresh token to user', async () => {
+            const loginResponse = await loginUser(testUser);
+            const { _id: userId, refreshToken } = loginResponse.body;
+            const refreshResponse = await request(app)
+                .post(routeInAuthRouter('/refresh'))
+                .send({ refreshToken });
+
+            const user = await usersModel.findById(userId);
+            expect(refreshResponse.status).toBe(StatusCodes.OK);
+            expect(user?.refreshToken?.length).toBeGreaterThan(0);
+            expect(user?.refreshToken).not.toContain(refreshToken);
+        });
+
+        test('refresh expired token should return valid token', async () => {
+            const loginResponse = await loginUser(testUser);
+            const { refreshToken, accessToken } = loginResponse.body;
+            // wait for the token to expire
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+
+            const createPostResponse = await createPostRequest(accessToken);
+            expect(createPostResponse.status).toBe(StatusCodes.UNAUTHORIZED);
+
+            const refreshResponse = await request(app)
+                .post(routeInAuthRouter('/refresh'))
+                .send({ refreshToken });
+            expect(refreshResponse.status).toBe(StatusCodes.OK);
+            const newAccessToken = refreshResponse.body.accessToken;
+
+            const createPostResponseWithValidToken = await createPostRequest(
+                newAccessToken
+            );
+            expect(createPostResponseWithValidToken.status).toBe(
+                StatusCodes.CREATED
+            );
+        }, 10_000);
     });
 });
