@@ -1,6 +1,5 @@
 {
   "name": "web_apps_assignment_1",
-  "type": "module",
   "version": "1.0.0",
   "description": "first assignment for \"advanced web applications\"",
   "main": "index.js",

@@ -14,7 +14,7 @@ describe('Posts Router', () => {
         await postsModel.deleteMany();
     });
     afterAll(async () => {
-        database.disconnect();
+        await database.disconnect();
     });
 
     beforeEach(async () => {

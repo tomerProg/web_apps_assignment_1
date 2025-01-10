@@ -70,8 +70,8 @@ export const login = async (req: Request, res: Response) => {
         if (!validPassword) {
             throw new Error('wrong username or password');
         }
-
-        const tokens = generateTokens(user._id);
+        const userId = user._id.toString()
+        const tokens = generateTokens(userId);
         if (!tokens) {
             res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
             return;
@@ -81,7 +81,7 @@ export const login = async (req: Request, res: Response) => {
         }
         user.refreshToken.push(tokens.refreshToken);
         await user.save();
-        res.send({ ...tokens, _id: user._id });
+        res.send({ ...tokens, _id: userId });
     } catch (err) {
         res.status(StatusCodes.BAD_REQUEST).send(err);
     }
@@ -129,7 +129,8 @@ export const logout = async (req: Request, res: Response) => {
 export const refresh = async (req: Request, res: Response) => {
     try {
         const user = await verifyRefreshToken(req.body.refreshToken);
-        const tokens = generateTokens(user._id);
+        const userId = user._id.toString()
+        const tokens = generateTokens(userId);
 
         if (!tokens) {
             res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -143,7 +144,7 @@ export const refresh = async (req: Request, res: Response) => {
         res.send({
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
-            _id: user._id
+            _id: userId
         });
     } catch (err) {
         res.sendStatus(StatusCodes.BAD_REQUEST);
