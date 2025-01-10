@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
-import commentsRouter from './routes/comments_route.js';
+import commentsRouter from './routes/comments_route';
 import postsRouter from './routes/posts_route';
 
 export const createApp = (): Express => {
