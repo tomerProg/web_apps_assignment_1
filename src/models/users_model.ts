@@ -11,5 +11,6 @@ const userSchema = new Schema<IUser>({
   password: {type: String, required: true},
   refreshToken: {type: [String], default: []}
 });
+userSchema.index({ email: 1 }, { unique: true });
 
 export default model<IUser>("Users", userSchema);

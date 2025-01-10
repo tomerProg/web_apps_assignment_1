@@ -14,7 +14,7 @@ describe('Posts Router', () => {
         await postsModel.deleteMany();
     });
     afterAll(async () => {
-        database.disconnect();
+        await database.disconnect();
     });
 
     beforeEach(async () => {
@@ -126,7 +126,7 @@ describe('Posts Router', () => {
             const newPost: IPost = {
                 title: 'new title',
                 content: 'content',
-                owner: 'new owner',
+                owner: 'new owner'
             };
             const response = await request(app).post('/posts').send(newPost);
 
@@ -137,7 +137,7 @@ describe('Posts Router', () => {
         test('missing post field should return BAD_REQUEST', async () => {
             const newPost = {
                 content: 'content',
-                owner: 'new owner',
+                owner: 'new owner'
             };
             const response = await request(app).post('/posts').send(newPost);
 
