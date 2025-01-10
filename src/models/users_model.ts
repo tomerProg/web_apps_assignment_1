@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import {Schema, model} from "mongoose";
 
 export interface IUser {
   email: string;
@@ -6,12 +6,10 @@ export interface IUser {
   refreshToken?: string[];
 }
 
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new Schema<IUser>({
   email: {type: String, required: true, unique: true},
   password: {type: String, required: true},
   refreshToken: {type: [String], default: []}
 });
 
-const userModel = mongoose.model<IUser>("Users", userSchema);
-
-export default userModel;
+export default model<IUser>("Users", userSchema);
