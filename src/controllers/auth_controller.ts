@@ -83,8 +83,43 @@ export const login = async (req: Request, res: Response) => {
     }
 };
 
+const verifyRefreshToken = async (refreshToken: string | undefined) => {
+    if (!refreshToken) {
+        throw new Error('missing refresh token');
+    }
+    if (!process.env.TOKEN_SECRET) {
+        throw new Error('missing token secret');
+    }
+    const tokenSecret = process.env.TOKEN_SECRET;
+    const verifiedTokenPayload = jwt.verify(refreshToken, tokenSecret);
+    if (typeof verifiedTokenPayload === 'string') {
+        throw new Error('token payload shoud not be string');
+    }
+
+    const userId = verifiedTokenPayload._id;
+    const user = await userModel.findById(userId);
+    if (!user) {
+        throw new Error('user not found');
+    }
+    if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
+        user.refreshToken = [];
+        await user.save();
+        throw new Error('invalid refresh token');
+    }
+    const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
+    user.refreshToken = tokens;
+
+    return user;
+};
+
 export const logout = async (req: Request, res: Response) => {
-    res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
+    try {
+        const user = await verifyRefreshToken(req.body.refreshToken);
+        await user.save();
+        res.sendStatus(StatusCodes.OK);
+    } catch (err) {
+        res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
 };
 
 export const refresh = async (req: Request, res: Response) => {
