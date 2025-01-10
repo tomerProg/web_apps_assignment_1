@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import commentModel, {IComment} from '../models/comments_model';
 import BaseController from "./base_controller";
-class commentsController extends BaseController<IComment>{
+
+class CommentController extends BaseController<IComment>{
     constructor(){
         super(commentModel)
     }
@@ -12,5 +13,4 @@ class commentsController extends BaseController<IComment>{
     }
 }
 
-
-export default commentsController
+export default new CommentController();
