@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
             throw new Error('wrong username or password');
         }
 
-        const tokens = generateTokens(user._id);
+        const tokens = generateTokens(user._id.toString());
         if (!tokens) {
             res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
             return;
