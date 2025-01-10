@@ -6,11 +6,6 @@ class CommentController extends BaseController<IComment>{
     constructor(){
         super(commentModel)
     }
-    
-    async getByPostId(req: Request, res: Response) {
-        const filter = req.query.postId ? {postId: req.query.postId} : {};
-        return this.getByFilter(req, res, filter);
-    }
 }
 
 export default new CommentController();

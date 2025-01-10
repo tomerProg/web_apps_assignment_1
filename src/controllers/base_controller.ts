@@ -15,16 +15,6 @@ class BaseController<T> {
         }
     }
 
-    async getByFilter(req: Request, res: Response, filter: any) {
-        try {
-            const items = await this.model.find(filter);
-            res.send(items);
-        } catch (error) {
-            res.sendStatus(StatusCodes.BAD_REQUEST);
-        }
-    }
-
-
     async getById(req: Request, res: Response) {
         const id = req.params.id;
         try {
