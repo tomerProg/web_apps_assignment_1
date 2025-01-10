@@ -3,6 +3,8 @@ import express, { Express } from 'express';
 import authRouter from './routes/auth_route';
 import commentsRouter from './routes/comments_route';
 import postsRouter from './routes/posts_route';
+import swaggerUI from "swagger-ui-express"
+import specs from './swagger'
 
 export const createApp = (): Express => {
     const app = express();
@@ -12,7 +14,8 @@ export const createApp = (): Express => {
     app.use('/auth', authRouter);
     app.use('/posts', postsRouter);
     app.use('/comments', commentsRouter);
-
+    
+    app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));    
     return app;
 };
 
@@ -34,3 +37,4 @@ const startServer = async () => {
 };
 
 export default startServer;
+
