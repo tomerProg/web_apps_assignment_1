@@ -32,7 +32,7 @@ type Tokens = {
     refreshToken: string;
 };
 
-const generateTokens = (userId: string): Tokens | null => {
+export const generateTokens = (userId: string): Tokens | null => {
     if (!process.env.TOKEN_SECRET) {
         return null;
     }
@@ -84,5 +84,9 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
+    res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
+};
+
+export const refresh = async (req: Request, res: Response) => {
     res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
 };
