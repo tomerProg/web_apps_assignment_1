@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import userModel from '../models/users_model';
@@ -31,13 +31,17 @@ type Tokens = {
     accessToken: string;
     refreshToken: string;
 };
+type TokenPayload = {
+    _id: string;
+    random: string;
+};
 
 export const generateTokens = (userId: string): Tokens | null => {
     if (!process.env.TOKEN_SECRET) {
         return null;
     }
     const random = Math.random().toString();
-    const payload = {
+    const payload: TokenPayload = {
         _id: userId,
         random: random
     };
@@ -123,5 +127,51 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const refresh = async (req: Request, res: Response) => {
-    res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
+    try {
+        const user = await verifyRefreshToken(req.body.refreshToken);
+        const tokens = generateTokens(user._id);
+
+        if (!tokens) {
+            res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+            return;
+        }
+        if (!user.refreshToken) {
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(tokens.refreshToken);
+        await user.save();
+        res.send({
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            _id: user._id
+        });
+    } catch (err) {
+        res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
+};
+
+export const authMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const authorization = req.header('authorization');
+    const token = authorization && authorization.split(' ')[1];
+
+    if (!token) {
+        res.sendStatus(StatusCodes.UNAUTHORIZED);
+        return;
+    }
+    if (!process.env.TOKEN_SECRET) {
+        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        return;
+    }
+
+    try {
+        const verifiedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+        req.params.userId = (verifiedToken as TokenPayload)._id;
+        next();
+    } catch (error) {
+        res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
 };
