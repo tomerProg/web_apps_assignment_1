@@ -82,3 +82,7 @@ export const login = async (req: Request, res: Response) => {
         res.status(StatusCodes.BAD_REQUEST).send(err);
     }
 };
+
+export const logout = async (req: Request, res: Response) => {
+    res.sendStatus(StatusCodes.NOT_IMPLEMENTED);
+};

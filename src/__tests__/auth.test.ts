@@ -9,23 +9,33 @@ describe('authentication tests', () => {
     let database: Database;
     const app = createApp();
 
+    const routeInAuthRouter = (route: string) => '/auth' + route;
+    const testUser: User & { _id?: string } = {
+        email: 'tomercpc01@gmail.com',
+        password: '123456'
+    };
+
     beforeAll(async () => {
         database = await startDatabase();
     });
     afterAll(async () => {
         database.disconnect();
     });
+    beforeEach(async () => {
+        const { email, password } = testUser;
+        const user = await createUserForDb(email, password);
+        const { _id } = await usersModel.create(user);
+        testUser._id = _id;
+    });
     afterEach(async () => {
         await usersModel.deleteMany();
     });
 
-    const routeInAuthRouter = (route: string) => '/auth' + route;
-    const testUser: User = {
-        email: 'tomercpc01@gmail.com',
-        password: '123456'
-    };
-
     describe('register', () => {
+        beforeEach(async () => {
+            await usersModel.deleteMany();
+        });
+
         test('register new user shold create user', async () => {
             const response = await request(app)
                 .post(routeInAuthRouter('/register'))
@@ -74,12 +84,6 @@ describe('authentication tests', () => {
     });
 
     describe('login', () => {
-        beforeEach(async () => {
-            const { email, password } = testUser;
-            const user = await createUserForDb(email, password);
-            await usersModel.create(user);
-        });
-
         test('user login should return tokens', async () => {
             const response = await request(app)
                 .post(routeInAuthRouter('/login'))
@@ -134,6 +138,26 @@ describe('authentication tests', () => {
                 });
 
             expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+        });
+    });
+
+    describe('logout', () => {
+        const loginUser = (user: User) =>
+            request(app).post(routeInAuthRouter('/login')).send(user);
+
+        test('logout should remove all user refresh tokens', async () => {
+            const loginResponse = await loginUser(testUser);
+            expect(loginResponse.statusCode).toBe(StatusCodes.OK);
+            const { refreshToken, _id: userId } = loginResponse.body;
+
+            const logoutResponse = await request(app)
+                .post(routeInAuthRouter('/logout'))
+                .send({ refreshToken });
+            expect(logoutResponse.statusCode).toBe(StatusCodes.OK);
+
+            const user = await usersModel.findById(userId);
+            expect(user).toBeDefined();
+            expect(user!.refreshToken?.length).toBe(0);
         });
     });
 });
