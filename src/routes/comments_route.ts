@@ -187,7 +187,7 @@ router.put('/:id', authMiddleware, CommentController.update.bind(CommentControll
 
 /**
  * @swagger
- * comments/{id}:
+ * /comments/{id}:
  *   delete:
  *     summary: Delete a comment by ID
  *     description: Delete a single comment by its ID
