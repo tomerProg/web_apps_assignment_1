@@ -17,7 +17,8 @@ const router = Router();
  *     Comment:
  *       type: object
  *       required:
- *         - title
+ *         - owner
+ *         - postId
  *         - content
  *       properties:
  *         _id:
@@ -47,6 +48,14 @@ const router = Router();
  *     description: Retrieve a list of all comments
  *     tags:
  *       - Comments
+ *     parameters:
+ *       - name: owner
+ *         in: query
+ *         description: owner filter for comments (optional)
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: fb08fc404da19e1eec22168715de8c9c
  *     responses:
  *       200:
  *         description: A list of comments
@@ -107,9 +116,6 @@ router.get('/:id', CommentController.getById.bind(CommentController));
  *           schema:
  *             type: object
  *             properties:
- *               owner:
- *                 type: string
- *                 description: The owner of the comment
  *               postId:
  *                 type: string
  *                 description: The post id of the comment
@@ -117,7 +123,6 @@ router.get('/:id', CommentController.getById.bind(CommentController));
  *                 type: string
  *                 description: The content of the comment
  *             required:
- *               - owner
  *               - postId
  *               - content
  *     responses:
@@ -168,13 +173,9 @@ router.post('/', authMiddleware, CommentController.create.bind(CommentController
  *               content:
  *                 type: string
  *                 description: The content of the comment
- *             required:
- *               - owner
- *               - postId
- *               - content
  *     responses:
- *       201:
- *         description: Comment created successfully
+ *       200:
+ *         description: Comment updated successfully
  *       400:
  *         description: Invalid input
  *       404:
