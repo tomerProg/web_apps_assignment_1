@@ -9,6 +9,7 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "test": "jest --detectOpenHandles --forceExit --runInBand",
+    "test:coverage": "jest --detectOpenHandles --forceExit --runInBand --coverage",
     "lint": "eslint ."
   },
   "repository": {
