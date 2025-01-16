@@ -122,7 +122,7 @@ export const logout = async (req: Request, res: Response) => {
         await user.save();
         res.sendStatus(StatusCodes.OK);
     } catch (err) {
-        res.sendStatus(StatusCodes.BAD_REQUEST).send(err);
+        res.status(StatusCodes.BAD_REQUEST).send(err);
     }
 };
 
@@ -147,7 +147,7 @@ export const refresh = async (req: Request, res: Response) => {
             _id: userId
         });
     } catch (err) {
-        res.sendStatus(StatusCodes.BAD_REQUEST).send(err);
+        res.status(StatusCodes.BAD_REQUEST).send(err);
     }
 };
 
@@ -173,6 +173,6 @@ export const authMiddleware = (
         req.params.userId = (verifiedToken as TokenPayload)._id;
         next();
     } catch (error) {
-        res.sendStatus(StatusCodes.UNAUTHORIZED).send(error);
+        res.status(StatusCodes.UNAUTHORIZED).send(error);
     }
 };
